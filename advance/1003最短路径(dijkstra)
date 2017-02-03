@@ -1,0 +1,107 @@
+// 1003.cpp : dijkstra最短路径，图论，添加最短路径数量
+//
+
+#include<iostream>  
+#include<vector>  
+#include<limits.h>
+
+using namespace std;
+
+struct node
+{
+	int dis;//最短距离
+	int npath;//最短路径数量
+	int call_team;//最多队伍数
+	bool color;//颜色（有没有被发现）
+	int team;//这个城市的队伍数量
+	node()
+	{
+		dis = INT_MAX;
+		npath = 0;
+		call_team = 0;
+		color = false;
+		team = 0;
+
+	}
+};
+
+void relax(int i, int j, vector<node> &city, const vector<vector<int>> &map)
+{
+	if ((map[i][j] == 0) || (city[j].color == true)) return;
+
+	if (city[j].dis > city[i].dis + map[i][j])
+	{
+		city[j].dis = city[i].dis + map[i][j];
+		city[j].call_team += city[i].call_team;
+		city[j].npath = city[i].npath;
+	
+	}
+	else if (city[j].dis == city[i].dis + map[i][j])
+	{
+		city[j].npath += city[i].npath;
+		if (city[j].call_team < city[i].call_team + city[j].team)
+		{
+			city[j].call_team = city[i].call_team + city[j].team;
+		}
+	}
+}
+
+int extract_min(const vector<node> &city)
+{
+	int tem=INT_MAX;
+	int u=0;
+	for (int i = 0;i<city.size();i++)
+	{
+		if (city[i].color == true)continue;
+		if (city[i].dis < tem)
+		{
+			tem = city[i].dis;
+			u = i;
+		}
+	}
+	return u;
+}
+
+void dijkstra(int s, int v, vector<node> &city, const vector<vector<int>> &map)
+{
+	city[s].dis = 0;
+	city[s].npath = 1;
+	int u ;
+	while (1)
+	{
+		u = extract_min(city);
+		if (u == v)return;
+		city[u].color = true;
+		for (int i = 0; i < city.size(); i++)
+		{
+			relax(u, i, city, map);
+		}
+	}
+
+}
+
+int main()
+{
+	/*定义变量，初始化*/
+	int n, m, s, t;//城市数量、道路数量、源节点、目标节点
+	cin >> n >> m >> s >> t;
+	vector<vector<int>> map(n, vector<int>(n, 0));//图的邻接矩阵，全部初始化为0
+	vector<node> city(n);//城市向量
+	for (auto & i:city)
+	{
+		cin >> i.team;
+		i.call_team = i.team;
+	}
+	while (m--)//输入道路
+	{
+		int a, b;
+		cin >> a >> b;
+		cin >> map[a][b];
+		map[b][a] = map[a][b];
+	}
+	
+	/*开始计算*/
+	dijkstra(s, t, city, map);
+	cout << city[t].npath <<" "<< city[t].call_team;
+	return 0;
+}
