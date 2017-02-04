@@ -1,0 +1,74 @@
+// 1004.cpp :分支无限的有根树
+//
+
+#include <iostream>
+#include <string>
+#include <vector>
+using namespace std;
+
+struct node
+{
+	int id;
+	vector<int> child;
+	node(int i)
+	{
+		id = i;
+	}
+};
+
+void BFS(const vector<node> &Tree, int s, int level, vector<int> &number)
+{
+	if (Tree[s-1].child.empty())
+	{
+		number[level-1]++;
+		return;
+	}
+	else
+	{
+		if(number.size()<=level) number.push_back(0);
+		for (auto i : Tree[s-1].child)
+		{
+			BFS(Tree, i, level+1, number);
+		}
+	}
+}
+
+int main()
+{
+	/*初始化*/
+	int n, m;//节点个数，内部节点个数
+	cin >> n >> m;
+	if (m == 0)//没有内部节点，全都是叶子
+	{
+		cout << n;
+		return 0;
+	}
+	vector<node> Tree;//树
+	for (int i = 1; i < n + 1; i++)
+	{
+		Tree.push_back(node(i));
+	}
+	/*输入子节点*/
+	while (m--)
+	{
+		int t_id, k;
+		cin >> t_id >> k;
+		while (k--)
+		{
+			int t_c_id;
+			cin >> t_c_id;
+			Tree[t_id-1].child.push_back(t_c_id);
+		}
+	}
+	/*计算level,从根节点开始遍历*/
+	vector<int> number(1,0);
+	BFS(Tree, 1, 1, number);
+	for (auto i = number.begin(); i < number.end(); i++)
+	{
+		cout << *i;
+		if (i != number.end() - 1) cout << " ";
+	}
+
+    return 0;
+}
+
