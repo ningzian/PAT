@@ -1,0 +1,105 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+struct subvector//子数组结构体，用于函数返回，函数返回的类型
+{
+	vector<int>::iterator low;
+	vector<int>::iterator high;
+	int sum;
+	subvector(vector<int> v)
+	{
+		low = v.begin();
+		high = v.end();
+		sum = 0;
+	}
+};
+
+vector<int>::iterator find_mid_iterator( vector<int> &v, vector<int>::iterator low, vector<int>::iterator high)
+{
+	int a1 = low - v.begin();
+	int a2 = high - v.begin();
+	int a3 = (a1 + a2) / 2;
+	vector<int>::iterator mid = v.begin() + a3;
+	return mid;
+}
+subvector find_max_crossing_subvector(vector<int> &v, vector<int>::iterator low, vector<int>::iterator mid, vector<int>::iterator high)
+{
+	subvector tem(v);
+	tem.low = mid - 1;
+	tem.high = mid + 1;
+	/* 求left_sum */
+	int sum = 0;//临时存储sum
+	int left_sum = *(mid-1);
+	auto i = mid - 1;
+	while (1)
+	{
+		sum += *i;
+		if (sum > left_sum)
+		{
+			left_sum = sum;
+			tem.low = i;
+		}
+		if (i == low) break;
+		else i--;
+	}
+	/* 求right_sum */
+	sum = 0;
+	int right_sum = *mid;
+	i = mid;
+	while (i < high)
+	{
+		sum += *i;
+		if (sum > right_sum)
+		{
+			right_sum = sum;
+			tem.high = i+1;
+		}
+		i++;
+	}
+	tem.sum = left_sum + right_sum;
+	return tem;
+}
+
+subvector find_max_subvector(vector<int> &v, vector<int>::iterator low, vector<int>::iterator high)
+{
+	if (high == low+1)//基本情况
+	{
+		subvector tem(v);
+		tem.high = high;
+		tem.low = low;
+		tem.sum = *low;
+		return tem;
+	}
+
+	vector<int>::iterator mid = find_mid_iterator(v,low,high);
+	subvector left(v), right(v), crossing(v);
+	left = find_max_subvector(v, low, mid);
+	right = find_max_subvector(v, mid, high);
+	crossing = find_max_crossing_subvector(v, low, mid, high);
+	if ((left.sum >= right.sum) && (left.sum >= crossing.sum)) return left;
+	else if ((crossing.sum >= left.sum) && (crossing.sum >= right.sum)) return crossing;
+	else return right;
+}
+
+int main()
+{
+	int M;
+	bool it = true;
+	vector<int> v;
+	cin >> M;
+	while (M--)
+	{
+		int t;
+		cin >> t;
+		if (t >= 0)it = false;
+		v.push_back(t);
+	}
+	if (it)//全为负数
+	{
+		cout << 0 << " " << v.front() << " " << v.back();
+		return 0;
+	}
+	subvector ans = find_max_subvector(v, v.begin(), v.end());
+	cout << ans.sum << " " << *(ans.low) << " " << *(ans.high - 1);
+    return 0;
+}
