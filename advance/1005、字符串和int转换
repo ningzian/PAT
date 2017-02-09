@@ -1,0 +1,29 @@
+// 1005.cpp : 字符串转Int，int转字符串
+//
+
+#include <iostream>
+#include <string>
+#include <vector>
+using namespace std;
+
+
+int main()
+{
+	string s;
+	vector<string> v = { "zero","one", "two","three","four","five" ,"six" ,"seven" ,"eight" ,"nine" };
+	cin >> s;
+	int sum = 0;
+	for (auto i : s)
+	{
+		sum += (i - '0');
+	}
+	string ans = to_string(sum);
+	for (auto i=ans.begin();i<ans.end();i++)
+	{
+		int it = (*i - '0');
+		cout << v[it];
+		if (i != ans.end() - 1)cout << " ";
+	}
+    return 0;
+}
+
