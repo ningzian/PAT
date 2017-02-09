@@ -1,0 +1,23 @@
+#include <iostream>
+using namespace std;
+
+
+int main()
+{
+	int n;
+	cin >> n;
+	int sum = 0;
+	int now = 0;
+	int req;
+	while (n--)
+	{
+		cin >> req;
+		if (req > now) sum += 6 * (req - now);
+		else sum += 4 * (now - req);
+
+		now = req;
+		sum += 5;
+	}
+	cout << sum;
+    return 0;
+}
