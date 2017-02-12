@@ -1,0 +1,119 @@
+// 1012.cpp : 结构体的排序问题，自己写比较函数
+//
+
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <unordered_map>
+using namespace std;
+
+struct st
+{
+	string id;
+	int C;
+	int M;
+	int E;
+	int A;
+	vector<int> rank;
+	
+};
+
+bool isbigger_C(const st &ls, const st &rs)
+{
+	return ls.C > rs.C;
+}
+bool isbigger_M(const st &ls, const st &rs)
+{
+	return ls.M > rs.M;
+}
+bool isbigger_E(const st &ls, const st &rs)
+{
+	return ls.E > rs.E;
+}
+bool isbigger_A(const st &ls, const st &rs)
+{
+	return ls.A > rs.A;
+}
+
+
+int main()
+{
+	/* 定义变量，输入 */
+	vector<char> data { 'A','C','M','E' };
+	int n, m;
+	cin >> n >> m;
+	vector<st> students;
+	while (n--)
+	{
+		st tem;
+		cin >> tem.id >> tem.C >> tem.M >> tem.E;
+		tem.A = (tem.C + tem.M + tem.E) / 3;
+		students.push_back(tem);
+	}
+	vector<string> v;
+	while (m--)
+	{
+		string s_tem;
+		cin >> s_tem;
+		v.push_back(s_tem);
+	}
+	/* 排序，计算 */
+	sort(students.begin(), students.end(), isbigger_A);
+	for (auto i = students.begin(); i < students.end(); i++)
+	{
+		if ((i > students.begin()) && ((*i).A == (*(i - 1)).A))
+		{
+			(*i).rank.push_back((*(i - 1)).rank[0]);//成绩相同的情况，并列排名
+		}
+		else (*i).rank.push_back(i - students.begin() + 1);
+	}
+	sort(students.begin(), students.end(), isbigger_C);
+	for (auto i = students.begin(); i < students.end(); i++)
+	{
+		if ((i > students.begin()) && ((*i).C == (*(i - 1)).C))
+		{
+			(*i).rank.push_back((*(i - 1)).rank[1]);//成绩相同的情况，并列排名
+		}
+		else (*i).rank.push_back(i - students.begin()+1);
+	}
+	sort(students.begin(), students.end(), isbigger_M);
+	for (auto i = students.begin(); i < students.end(); i++)
+	{
+		if ((i > students.begin()) && ((*i).M == (*(i - 1)).M))
+		{
+			(*i).rank.push_back((*(i - 1)).rank[2]);//成绩相同的情况，并列排名
+		}
+		else (*i).rank.push_back(i - students.begin()+1);
+	}
+	sort(students.begin(), students.end(), isbigger_E);
+	for (auto i = students.begin(); i < students.end(); i++)
+	{
+		if ((i > students.begin()) && ((*i).E == (*(i - 1)).E))
+		{
+			(*i).rank.push_back((*(i - 1)).rank[3]);//成绩相同的情况，并列排名
+		}
+		else (*i).rank.push_back(i - students.begin() +1);
+	}
+	
+	/* 输出 */
+	unordered_map<string, st> m_ans;
+	for (auto &i : students)//重新复制给无序关联容器,方便找到
+	{
+		m_ans[i.id] = i;
+	}
+	for (auto &i : v)
+	{
+		if (m_ans.find(i) == m_ans.end())//不存在
+		{
+			cout << "N/A" << endl;
+		}
+		else
+		{
+			vector<int>::iterator min_rank = min_element(m_ans[i].rank.begin(), m_ans[i].rank.end());
+			cout << *min_rank << " " << data[distance(m_ans[i].rank.begin(), min_rank)] << endl;
+		}
+	}
+    return 0;
+}
+
