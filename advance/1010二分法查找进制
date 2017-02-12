@@ -1,0 +1,111 @@
+// 1010.cpp : 二分法查找进制，下届是这个数中每一位的最大值，上届是已知进制的十进制值
+// 第18个测试点还没有通过，第18个测试点的结果是Impossible
+#include <iostream>
+#include <string>
+#include <cmath>
+#include <algorithm>
+using namespace std;
+
+int maxdigit(const string &s)
+{
+	int t = 0;
+	for (auto i : s)
+	{
+		int tem;
+		if (i >= 'a') tem = i - 'a' +10;
+		else tem = i - '0';
+		if (tem > t) t = tem;
+	}
+	return t+1;
+}
+
+int compare(const string &s, const long long int &tar, const long long int &ra)
+{
+	long long int res=0;
+	int n = s.size();
+	long long int W = 1;
+	for (int i = n - 1; i >= 0; i--)
+	{
+		int tem;
+		if (s[i] >= 'a') tem = s[i] - 'a' +10;
+		else tem = s[i] - '0';
+
+		res += tem*W;
+		W *= ra;
+		if ((res > tar)||(res<0)) return 1;
+		else if (res == tar) return 0;
+
+	}
+	return -1;
+}
+
+long long int find_radix(const string &s, const long long int &n)//找到是几进制
+{
+	long long int ra;//进制
+	long long int L = maxdigit(s);//下界
+	long long int M = n>L? n:(L+1);//上届
+
+	while (L <= M)
+	{
+		ra = (L + M) / 2;
+		int sig = compare(s, n, ra);
+		if (sig == 0) return ra;
+		else if (sig == 1) M = ra-1;
+		else L = ra + 1;
+	}
+	return 0;
+}
+long long int count_number(const string &s, const long long int &ra)//计算这个数的十进制是多少
+{
+	long long int n1 = 0;
+	int n = s.size();
+	long long int W = 1;
+	for (int i = n - 1; i >= 0; i--)
+	{
+		int tem;
+		if (s[i] >= 'a') tem = s[i] - 'a' + 10;
+		else tem = s[i] - '0';
+
+		n1 += tem*W;
+		W *= ra;
+	}
+	return n1;
+}
+int main()
+{
+	long long int ans;//结果，另一个数是几进制
+	long long int target;//给出的数值
+	
+	string s1, s2;//给的两个数
+	cin >> s1 >> s2;
+	int tar;
+	long long int ra;
+	cin >> tar >> ra;
+	if ((s1 == "1") && (s2 == "1"))
+	{
+		cout << 2;
+		return 0;
+	}
+	if (s1 == s2)
+	{
+		if ((s1 == "1") && (s2 == "1")) cout << 2;
+		else if ((s1 == "0") && (s2 == "0")) cout << 1;
+		else cout << ra;
+		return 0;
+	}
+
+	if (tar == 1)
+	{
+		target = count_number(s1, ra);	
+		ans = find_radix(s2, target);
+	}
+	else
+	{
+		target = count_number(s2, ra);
+		ans = find_radix(s1, target);
+	}
+	if (ans) cout << ans;
+	else cout << "Impossible";
+    return 0;
+}
+
