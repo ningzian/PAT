@@ -1,0 +1,39 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <iomanip>
+using namespace std;
+
+
+int main()
+{
+	string s;
+	double p=1;
+	int t = 3;
+	while (t--)
+	{
+		double d_tem;
+		double max=0;
+		int cnt;
+		for(int t2 = 0; t2<3; t2++)
+		{
+			cin >> d_tem;
+			if (d_tem > max)
+			{
+				max = d_tem;
+				cnt = t2;
+			}
+		}
+		if(cnt==0) s.push_back('W');
+    else if(cnt==1) s.push_back('T');
+    else s.push_back('L');
+    s.push_back(' ');
+    p *= max;
+	}
+	p = (p*0.65 - 1) * 2;
+	int x = int(p * 100)%10;//确定最后一位的大小	
+  if (x >= 5)p += 0.01;
+  cout << s;
+	cout << setiosflags(ios::fixed) << setprecision(2) << p;
+    return 0;
+}
