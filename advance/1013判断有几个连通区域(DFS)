@@ -1,0 +1,55 @@
+// 1013.cpp : 联通图
+//检查图是否连通，也就是检查有几个连通的区域，如果有t个独自连通的区域，则需要t-1条路
+//用DFS深度优先搜索
+//邻接矩阵的形式表示图，
+
+#include <iostream>
+#include <vector>
+using namespace std;
+
+void DFS(const vector<vector<bool>> &map, vector<bool> &color, int c, int n)
+{
+	color[c] = true;
+	for (int i = 0; i < n; i++)
+	{
+		if ((color[i] == false) && (map[c][i] == true))
+		{
+			DFS(map,color,i,n);
+		}
+	}
+}
+
+int main()
+{
+	int n, m, k;
+	cin >> n >> m >> k;
+	vector<vector<bool>> map( n, vector<bool>(n,false) );//邻接链表
+	while (m--)
+	{
+		int a, b;
+		cin >> a >> b;
+		map[a-1][b-1] = true;
+		map[b-1][a-1] = true;
+	}
+	while (k--)
+	{
+
+		int num = 0;//连通区域的个数,最后的结果等于num-1
+		vector<bool> color(n, false);
+		int city;
+		cin >> city;
+		color[city-1] = true;
+		for (int i = 0; i < n; i++)
+		{
+			if (color[i] == false)
+			{
+				DFS(map, color,i,n);
+				num++;
+			}
+		}
+		cout << num - 1 << endl;
+	}
+
+    return 0;
+}
+
