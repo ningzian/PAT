@@ -1,0 +1,182 @@
+// 1014.cpp : Defines the entry point for the console application.
+//
+
+#include <iostream>
+#include <vector>
+#include <deque>
+#include <array>
+using namespace std;
+
+struct time_ti
+{
+	int hour;
+	int minut;
+	time_ti(int a, int b)
+	{
+		hour = a;
+		minut = b;
+	}
+	time_ti()
+	{
+		hour = -1;
+		minut = -1;
+	}
+	time_ti& operator +=(const time_ti & rhs)
+	{
+		minut += rhs.minut;
+		while (minut >= 60)
+		{
+			minut -= 60;
+			hour++;
+		}
+		hour += rhs.hour;
+		return *this;
+	}
+	friend ostream& operator<<(ostream &os, const time_ti &t);
+	
+};
+struct person
+{
+	int cost_time;
+	time_ti start;
+	time_ti done;
+};
+
+ostream & operator<<(ostream &os, const time_ti &t)
+{
+	if (t.hour > 9) os << t.hour;
+	else os << '0' << t.hour;
+	os << ":";
+	if (t.minut > 9) os << t.minut;
+	else os << '0' << t.minut;
+	return os;
+}
+time_ti operator +(const time_ti & lhs, int t)
+{
+	time_ti tem(0,0);
+	tem.minut = lhs.minut+t;
+	tem.hour = lhs.hour;
+	while (tem.minut >= 60)
+	{
+		tem.minut -= 60;
+		tem.hour++;
+	}
+	return tem;
+}
+bool operator< (const time_ti &ls, const time_ti &rs)
+{
+	if (ls.hour == rs.hour) return ls.minut < rs.minut;
+	else return ls.hour < rs.hour;
+}
+bool operator> (const time_ti &ls, const time_ti &rs)
+{
+	if (ls.hour == rs.hour) return ls.minut > rs.minut;
+	else return ls.hour > rs.hour;
+}
+bool operator != (const time_ti &ls, const time_ti &rs)
+{
+	return ((ls > rs)||(ls<rs));
+}
+bool operator == (const time_ti &ls, const time_ti &rs)
+{
+	return !(ls != rs);
+}
+bool operator <= (const time_ti &ls, const time_ti &rs)
+{
+	return ((ls == rs)||(ls<rs));
+}
+
+
+int main()
+{
+	/* 输入 */
+	int N, M, K, Q;
+	cin >> N >> M >> K >> Q;//N,窗口数量。M黄线内每个窗口排队人数。K总人数。Q询问时间的人数
+	vector<person> P;
+	for (int i = 0; i < K; i++)//
+	{
+		person tem;
+		cin >> tem.cost_time;
+		P.push_back(tem);
+	}
+	vector<deque<int>> window(N);
+	deque<int> line;//黄线外的排队
+	time_ti cur_time(8, 0);//当前时间
+	time_ti dead_line(17, 0);
+
+	/* 计算每个人的完成时间 */
+	for (int i = 0; i < K; i++)//初始化排队
+	{
+		//找到最小人数的队伍
+		int cnt = M;
+		int num = -1;
+		for (int j = 0; j < N; j++)
+		{
+			if (window[j].size() < cnt)
+			{
+				cnt = window[j].size();
+				num = j;
+			}
+		}
+		if (num >= 0)
+		{
+			if (window[num].empty())
+			{
+				window[num].push_back(i);
+				P[i].start = cur_time;
+				P[i].done = cur_time + P[i].cost_time;
+			}
+			else window[num].push_back(i);
+		}
+		else
+		{
+			while (i<K)
+			{
+				line.push_back(i);
+				i++;
+			}
+			break;
+		}
+	}
+	
+	
+	while (cur_time <= dead_line)
+	{
+		time_ti min_done_tem(17,0);
+		int window_num=-1;
+		for (int i = 0; i < N; i++)//每个窗口循环，找最先完成的
+		{
+			if ( ( !window[i].empty() ) &&(P[window[i].front()].done < min_done_tem))
+			{
+				min_done_tem = P[window[i].front()].done;
+				window_num = i;
+			}
+		}
+		//更新
+		if (window_num == -1) break;//所有窗口的完成时间都在17点之后了
+
+		cur_time = min_done_tem;
+		window[window_num].pop_front();
+		if (!line.empty())
+		{
+			window[window_num].push_back(line.front());
+			line.pop_front();
+		}
+		if (!window[window_num].empty())
+		{
+			P[window[window_num].front()].start = cur_time;
+			P[window[window_num].front()].done = cur_time + P[window[window_num].front()].cost_time;
+		}
+		
+	}
+	/* 输出 */
+	while (Q--)
+	{
+		int per;
+		cin >> per;
+		if (P[per-1].done.minut != -1) cout << P[per-1].done<<endl;
+		else cout << "Sorry" <<endl;
+	}
+    return 0;
+}
+
