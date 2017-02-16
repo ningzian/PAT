@@ -1,0 +1,127 @@
+// 1018.cpp : 
+// 用DFS，深搜遍历，必须遍历，才能找到最少sent的
+//深搜的过程中，维持几个变量，到当前的最短路径，最少sent,最少back，当前路径（数组）
+
+#include <iostream>
+#include <vector>
+#include <climits>
+using namespace std;
+
+struct condition
+{
+	int len;
+	int sent;
+	int back;
+	vector<int> path;
+	condition(int a, int b, int c)
+	{
+		len = a;
+		sent = b;
+		back = c;
+	}
+	void clear_t()
+	{
+		len = 0;
+		sent = 0;
+		back = 0;
+		path.clear();
+	}
+};
+
+bool operator<(const condition &lhs, const condition &rhs)
+{
+	if (lhs.len != rhs.len) return lhs.len < rhs.len;
+	else if (lhs.sent != rhs.sent) return lhs.sent < rhs.sent;
+	else return lhs.back < rhs.back;
+}
+bool operator> (const condition &lhs, const condition &rhs)
+{
+	if (lhs.len != rhs.len) return lhs.len > rhs.len;
+	else if (lhs.sent != rhs.sent) return lhs.sent > rhs.sent;
+	else return lhs.back > rhs.back;
+}
+void dfs(const vector<vector<int>> &map, int s, int v, int n, int C, condition &cur, condition &min, vector<bool> &color, const vector<int> &contain)
+{
+	if (cur > min)
+	{
+		return;
+	}
+
+	if ((s == v)&&(min>cur))//到达目的地
+	{
+		min = cur;
+		return;
+	}
+
+	for (int i = 0; i < n; i++)
+	{
+		if ((!color[i]) && (map[s][i]))
+		{
+			//对i进行操作
+			color[i] = true;
+			cur.path.push_back(i);
+			cur.len += map[s][i];
+			int t1 = cur.sent;
+			int t2 = cur.back;
+			if (contain[i] > C / 2)
+			{
+				cur.back += contain[i] - C / 2;
+			}
+			else if ((C / 2 - contain[i]) > cur.back)
+			{
+				cur.sent += (C / 2 - contain[i] - cur.back);
+				cur.back = 0;
+			}
+			else cur.back -= C / 2 - contain[i];
+			//dfs(i)
+			dfs(map, i, v, n, C, cur, min, color, contain);
+			//回到dfs(i)之前
+			color[i] = false;
+			cur.path.pop_back();
+			cur.len -= map[s][i];
+			cur.sent = t1;
+			cur.back = t2;
+		}
+	}
+	return;
+}
+
+int main()
+{
+	/* 初始化，输入 */
+	int C, N, p, M;//C每个站可以放多少自行车。N多少个站。p目的站。M道路数量
+	cin >> C >> N >> p >> M;
+	vector<int> contain;//每个站当前存放的自行车数量
+	contain.push_back(INT_MAX);
+	for (int i = 0; i < N; i++)
+	{
+		int tem;
+		cin >> tem;
+		contain.push_back(tem);
+	}
+	vector<vector<int>> map(N+1,vector<int>(N+1,0));//路径图
+	while (M--)
+	{
+		int c1, c2, t;
+		cin >> c1 >> c2 >> t;
+		map[c1][c2] = t;
+		map[c2][c1] = t;
+	}
+
+	/* 计算 */
+	condition cur(0,0,0);
+	condition min(INT_MAX,INT_MAX,INT_MAX);
+
+
+	vector<bool> color(N+1, false);
+	color[0] = true;//源节点初始化
+	dfs(map,0,p,N+1,C,cur,min,color,contain);
+	cout << min.sent<< " "<<0;
+	for (auto i : min.path)
+	{
+		cout << "->" << i;
+	}
+	cout << " " << min.back;
+    return 0;
+}
+
