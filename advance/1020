@@ -1,0 +1,92 @@
+// 1020.cpp : Defines the entry point for the console application.
+//二叉树、链表创建节点的时候，一定要用new。
+//二叉树的后序遍历postorder，中序遍历inorder。层级遍历
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <algorithm>
+using namespace std;
+
+struct node
+{
+	int num;
+	node *left;
+	node *right;
+	node()
+	{
+		num = 0;
+		left = NULL;
+		right = NULL;
+	}
+};
+
+node* creat_tree(vector<int>::iterator le, vector<int>::iterator ri, vector<int>::reverse_iterator &cur)
+{
+	
+	if (le >= ri) return NULL;
+	vector<int>::iterator index = find(le, ri, *cur);
+	node *Tree = new(node);
+	Tree->num = *index;
+	cur++;
+	if ((le+1) == ri)
+	{
+		Tree->left = NULL;
+		Tree->right = NULL;
+	}
+	else
+	{
+		Tree->right = creat_tree(index+1,ri,cur);
+		Tree->left = creat_tree(le, index, cur);
+	}
+	return Tree;
+
+}
+
+void BFS(node *root)
+{
+	queue<node*> q;
+	bool first = true;
+	q.push(root);
+
+	while (!q.empty())
+	{
+		node *t = q.front();
+		q.pop();
+		if (first)
+		{
+			cout << t->num;
+			first = false;
+		}
+		else cout << " " << t->num;
+
+		if (t->left != NULL) q.push(t->left);
+		if (t->right != NULL) q.push(t->right);
+	}
+
+}
+
+int main()
+{
+	int n;
+	cin >> n;
+	vector<int> postorder;
+	vector<int> inorder;
+	for (int i = 0; i < n; i++)
+	{
+		int a;
+		cin >> a;
+		postorder.push_back(a);
+	}
+	for (int i = 0; i < n; i++)
+	{
+		int a;
+		cin >> a;
+		inorder.push_back(a);
+	}
+	node *root;
+	auto i = postorder.rbegin();
+	root = creat_tree(inorder.begin(),inorder.end(), i);
+	BFS(root);
+    return 0;
+}
+
