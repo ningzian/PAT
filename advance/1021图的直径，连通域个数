@@ -1,0 +1,86 @@
+
+// 1021.cpp : Defines the entry point for the console application.
+//链表(向量)的形式存放图
+//通常使用并查集判断是不是树,这里使用DFS判断连通区域的个数,
+//求图的直径，从叶子节点开始，两次dfs就行了。两次DFS的结果要放在一起
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+
+void DFS(int s,int level,int &hight, vector<bool> &color, const vector<vector<int>> &adj, vector<int> &leave)
+{
+  color[s] = true;
+  if (level > hight)
+  {
+    hight = level;
+    leave.clear();
+    leave.push_back(s);
+  }
+  else if (hight == level)
+  {
+    leave.push_back(s);
+  }
+  for (int i = 0; i < adj.size(); i++)
+  {
+    if ((color[i] == false) && (find(adj[s].begin(), adj[s].end(), i) != adj[s].end()))
+    {
+      DFS(i, level+1 ,hight, color, adj, leave);
+    }
+  }
+}
+
+int main()
+{
+  int n;
+  cin >> n;
+  vector<vector<int>> adj(n);
+  for(int i = 0;i<(n-1);i++)
+  {
+    int t1, t2;
+    cin >> t1 >> t2;
+    adj[t1-1].push_back(t2-1);
+    adj[t2-1].push_back(t1-1);
+  }
+  vector<bool> color(n, false);
+  vector<int> leave;
+  int num = 0;
+  int hight = 0;
+  for (int i = 0; i < n; i++)
+  {
+    if (color[i] == false)
+    {
+      DFS(i,1,hight, color, adj,leave);
+      num++;
+    }
+  }
+  if (num > 1) cout << "Error: " << num << " components";
+  else
+  {
+                vector<int> leave1;
+    hight = 0;
+    for (auto it = color.begin(); it < color.end(); it++)
+    {
+      *it = false;
+    }
+    DFS(leave.front(), 1, hight, color, adj, leave1);
+    
+    
+    //两次的结果合并,不能直接添加
+    leave.insert(leave.end(),leave1.begin(),leave1.end());
+    sort(leave.begin(), leave.end());
+    for (auto i = leave.begin(); i < leave.end();i++)//删除重复元素
+    {
+      if (((i > leave.begin()) && (*i != *(i - 1)))||(i == leave.begin())) cout << *i + 1<<endl;
+    }
+  }
+  
+
+    return 0;
+}
+
+双击代码区域可以查看未格式化的原始代码
+
+
+查看提交
