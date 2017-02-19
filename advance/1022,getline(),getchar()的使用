@@ -1,0 +1,135 @@
+// 1022.cpp : Defines the entry point for the console application.
+//getline(cin,s), getchar();cin>>s之后的空格和回车都没有消掉。
+#include <iostream>
+#include <vector>
+#include <map>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+struct book
+{
+	string title;
+	string author;
+	vector<string> keywords;
+	string publisher;
+	int year;
+};
+
+int main()
+{
+	map<string, vector<string>> map_title_id, map_author_id, map_key_id, map_pub_id, map_year_id;
+	int n, m;
+	cin >> n;
+	getchar();
+	for (int i = 0; i < n; i++)
+	{
+	    string id;
+		getline(cin, id);
+		string t;
+		getline(cin, t);
+		map_title_id[t].push_back(id);
+		getline(cin, t);
+		map_author_id[t].push_back(id);
+		while (cin >> t)
+		{
+			map_key_id[t].push_back(id);
+			char c = getchar();
+			if (c == '\n')break;
+		}
+		getline(cin, t);
+		map_pub_id[t].push_back(id);
+		getline(cin, t);
+		map_year_id[t].push_back(id);
+	}
+
+	
+	cin >> m;
+	getchar();
+	vector<string> ans;
+	while (m--)
+	{
+		string s;
+		getline(cin, s);
+		ans.push_back(s);
+		string s1(s.begin() + 3, s.end());
+		switch (s.front())
+		{
+		case '1':
+		{
+			if (map_title_id.find(s1) != map_title_id.end())
+			{
+				sort(map_title_id[s1].begin(), map_title_id[s1].end());
+				for (auto i : map_title_id[s1])
+				{
+					ans.push_back(i);
+				}
+			}
+			else ans.push_back("Not Found");
+			break;
+		}
+		case '2':
+		{
+			if (map_author_id.find(s1) != map_author_id.end())
+			{
+				sort(map_author_id[s1].begin(), map_author_id[s1].end());
+				for (auto i : map_author_id[s1])
+				{
+					ans.push_back(i);
+				}
+			}
+			else ans.push_back("Not Found");
+			break;
+		}
+		case '3':
+		{
+			if (map_key_id.find(s1) != map_key_id.end())
+			{
+				sort(map_key_id[s1].begin(), map_key_id[s1].end());
+				for (auto i : map_key_id[s1])
+				{
+					ans.push_back(i);
+				}
+			}
+			else ans.push_back("Not Found");
+			break;
+		}
+		case '4':
+		{
+			if (map_pub_id.find(s1) != map_pub_id.end())
+			{
+				sort(map_pub_id[s1].begin(), map_pub_id[s1].end());
+				for (auto i : map_pub_id[s1])
+				{
+					ans.push_back(i);
+				}
+			}
+			else ans.push_back("Not Found");
+			break;
+		}
+		case '5':
+		{
+			if (map_year_id.find(s1) != map_year_id.end())
+			{
+				sort(map_year_id[s1].begin(), map_year_id[s1].end());
+				for (auto i : map_year_id[s1])
+				{
+					ans.push_back(i);
+				}
+			}
+			else ans.push_back("Not Found");
+			break;
+		}
+
+		}
+	}//m--
+
+	for (auto i : ans)
+	{
+		cout << i << endl;
+	}
+
+
+    return 0;
+}
+
