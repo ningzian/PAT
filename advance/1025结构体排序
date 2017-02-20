@@ -1,0 +1,86 @@
+// 1025.cpp : 成绩相同的时候，名次并列
+//
+
+#include <iostream>
+#include <string>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+struct node
+{
+	string id;
+	int score;
+	int total_rank;
+	int local;
+	int local_rank;
+};
+
+bool operator< (const string &lhs, const string &rhs)
+{
+	
+	auto i = lhs.begin();
+	auto j = rhs.begin();
+	while (i<lhs.end() && j<rhs.end())
+	{
+		if (*i != *j) return *i < *j;
+		i++;
+		j++;
+	}
+	return false;
+}
+
+bool is_bigger (const node &lhs, const node &rhs)
+{
+	if (lhs.score == rhs.score) return lhs.id < rhs.id;
+	else return lhs.score > rhs.score;
+}
+
+int main()
+{
+	vector<node> v;
+	vector<int> group_num{ 0 };
+	int n;
+	cin >> n;
+	//输入
+	for (int i = 1; i <= n; i++)
+	{
+		int k;
+		cin >> k;
+		group_num.push_back(group_num.back() + k);
+		while (k--)
+		{
+			node tem;
+			cin >> tem.id;
+			cin >> tem.score;
+			tem.local = i;
+			v.push_back(tem);
+		}
+	}
+	//计算local_rank
+	for (int i = 1; i < group_num.size(); i++)
+	{
+		sort(v.begin() + group_num[i - 1], v.begin() + group_num[i],is_bigger);
+		for (int it = 1; it <= (group_num[i]- group_num[i - 1]); it++)
+		{
+			if (((group_num[i - 1] + it - 1) != 0) && (v[group_num[i - 1] + it - 1].score == v[group_num[i - 1] + it - 2].score)) v[group_num[i - 1] + it - 1].local_rank = v[group_num[i - 1] + it - 2].local_rank;
+			else v[group_num[i - 1] + it - 1].local_rank = it;
+		}
+	}
+	//计算total_tank
+	sort(v.begin(), v.end(),is_bigger);
+	for (int it = 1; it <= v.size(); it++)
+	{
+		if(((it-1)!=0)&&(v[it - 1].score== v[it - 2].score)) v[it - 1].total_rank = v[it-2].total_rank;
+		else v[it - 1].total_rank = it;
+	}
+	//输出
+	cout << v.size() << endl;
+	for (auto &i : v)
+	{
+		cout << i.id << " " << i.total_rank << " " << i.local << " " << i.local_rank << endl;
+	}
+
+    return 0;
+}
+
