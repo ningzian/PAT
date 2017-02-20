@@ -1,0 +1,46 @@
+// 1027.cpp : Defines the entry point for the console application.
+//十进制转换为13进制
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+void dec_13(int a)
+{
+	string s;
+	int t = 0;
+	while (a)
+	{
+		t = a % 13;
+		a /= 13;
+		char c;
+		if (t > 9)
+		{
+			c = 'A' + t - 10;
+		}
+		else c = '0' + t;
+		s.push_back(c);
+	}
+	if (s.size() == 1)
+	{
+		cout << "0";
+		cout << s;
+	}
+	else if (s.empty())
+	{
+		cout << "00";
+	}
+	else cout << s.back()<<s.front();
+}
+
+int main()
+{
+	int a, b, c;
+	cin >> a >> b >> c;
+	cout << '#';
+	dec_13(a);
+	dec_13(b);
+	dec_13(c);
+    return 0;
+}
+
