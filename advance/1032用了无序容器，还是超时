@@ -1,0 +1,43 @@
+// 1032.cpp : Defines the entry point for the console application.
+//未完成
+#include <iostream>
+#include <vector>
+#include <unordered_map>
+#include <algorithm>
+#include <iomanip>
+using namespace std;
+
+
+int main()
+{
+	int f1, f2, n;
+	unordered_map<int, int> m;
+	unordered_map<int, bool> m2;
+	cin >> f1 >> f2 >> n;
+	while (n--)
+	{
+		int te1,te2;
+		char a;
+		cin >> te1>> a >> te2;
+		m[te1] = te2;
+	}
+	for (; f1 != -1; f1 = m[f1])
+	{
+		m2[f1] = 1;
+	}
+	for (; f2 != -1; f2 = m[f2])
+	{
+		if (m2[f2] == 1)
+		{
+			cout << right;
+			cout<<setfill('0')<<setw(5) << f2;
+			return 0;
+		}
+	}
+
+	
+	
+	cout << "-1";
+	return 0;
+}
+
