@@ -1,0 +1,128 @@
+// 1030.cpp : Defines the entry point for the console application.
+//第二个测试点没有通过
+#include <iostream>
+#include <vector>
+#include <climits>
+using namespace std;
+
+struct node
+{
+	int id;
+	int p;
+	int len;
+	int cost;
+	bool color;
+	node()
+	{
+		p = -1;
+		len = INT_MAX;
+		cost = INT_MAX;
+		color = false;
+	}
+};
+struct edge
+{
+	int len;
+	int cost;
+};
+
+
+bool operator< (const node &lhs, const node &rhs)
+{
+	if (lhs.len == rhs.len) return lhs.cost < rhs.cost;
+	else return lhs.len < rhs.len;
+}
+bool operator> (const node &lhs, const node &rhs)
+{
+	if (lhs.len == rhs.len) return lhs.cost > rhs.cost;
+	else return lhs.len > rhs.len;
+}
+
+int Extract_min(const vector<node> &citys)
+{
+	node min;
+	for (auto i= citys.begin();i<citys.end();i++)
+	{
+		if ((*i).color) continue;
+		else if (*i < min) min = *i;
+	}
+	return min.id;
+}
+
+void relax(int u, int v, const vector<vector<edge>> &map, vector<node> &citys)
+{
+	if ((map[u][v].len == 0) || (citys[v].color)) return;
+
+	if (citys[v].len == citys[u].len + map[u][v].len)
+	{
+		if (citys[v].cost > citys[u].cost + map[u][v].len*map[u][v].cost)
+		{
+			citys[v].len = citys[u].len + map[u][v].len;
+			citys[v].cost = citys[u].cost + map[u][v].len*map[u][v].cost;
+			citys[v].p = u;
+		}
+	}
+	else if (citys[v].len > citys[u].len + map[u][v].len)
+	{
+		citys[v].len = citys[u].len + map[u][v].len;
+		citys[v].cost = citys[u].cost + map[u][v].cost;
+		citys[v].p = u;
+	}
+}
+
+void dijstra(int s, int d, const vector<vector<edge>> &map, vector<node> &citys)
+{
+	citys[s].len = 0;
+	citys[s].cost = 0;
+	int u;
+	while (1)
+	{
+		u = Extract_min(citys);
+		if (u == d)return;
+		citys[u].color = true;
+		for (int i = 0; i < citys.size(); i++)
+		{
+			relax(u, i, map, citys);
+		}
+	}
+}
+
+
+int main()
+{
+	int n, m, s, d;
+	cin >> n >> m >> s >> d;
+	//输入边
+	vector<vector<edge>> map(n,vector<edge>(n));
+	vector<node> citys(n);
+	for (int i = 0; i < n; i++)
+	{
+		citys[i].id = i;
+	}
+	while (m--)
+	{
+		int c1, c2, l, co;
+		cin >> c1 >> c2 >> l >> co;
+		map[c1][c2].len = l;
+		map[c1][c2].cost = co;
+
+		map[c2][c1] = map[c1][c2];
+	}
+	//计算
+	dijstra(s, d, map, citys);
+	vector<int> ans;
+	int td = d;
+	while (td != s)
+	{
+		ans.push_back(td);
+		td = citys[td].p;
+	}
+	ans.push_back(s);
+	for (auto i = ans.rbegin(); i < ans.rend(); i++)
+	{
+		cout << *i << " ";
+	}
+	cout << citys[d].len << " " << citys[d].cost;
+    return 0;
+}
+
