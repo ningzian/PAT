@@ -1,0 +1,157 @@
+// 1033.cpp : Defines the entry point for the console application.
+//典型的贪心算法
+
+#include <iostream>
+#include <vector>
+#include <map>
+#include <iomanip>
+#include <climits>
+using namespace std;
+
+
+struct state
+{
+	double money;//一花费的钱
+	int dis;//现在的路程
+	int left; //剩下可以走的路程
+	state()
+	{
+		money = 0;
+		dis = 0;
+		left = 0;
+	}
+};
+
+int find_min_p(double min_price,int dis, int max_dis_per, const map<int,double> &stations, state &cur)
+{
+	int cnt = 0;
+	if (dis == -1)
+	{
+		for (auto i = stations.begin(); i != stations.end(); i++)//搜索每个加油站
+		{
+			if (((*i).first <= cur.dis) || ((*i).first > cur.dis + max_dis_per)) continue;
+			cnt++;
+			if ((*i).second < min_price)
+			{
+				min_price = (*i).second;
+				dis = (*i).first;
+			}
+		}
+
+	}
+	else
+	{
+		for (auto i = stations.begin(); i != stations.end(); i++)//搜索每个加油站
+		{
+			if (((*i).first <= cur.dis) || ((*i).first > cur.dis + max_dis_per)) continue;
+			cnt++;
+			if ((*i).second < min_price)
+			{
+				min_price = (*i).second;
+				dis = (*i).first;
+				break;
+			}
+		}
+	}
+	
+	if (cnt == 0) return -1;
+	return dis;
+}
+
+void tanxin(int C_max,int D,int D_avd,const map<int,double> &stations, state &cur)//贪心算法
+{
+	
+	int max_dis_per = C_max*D_avd;//加满油能跑多少 600米
+	while (1)
+	{
+    	//看看 600米 内有没有比当前加油站价格便宜的
+		int dis = find_min_p( stations.find(cur.dis)->second, cur.dis, max_dis_per, stations, cur);
+		if (dis == -1)//600米内没有加油站
+		{
+			if (cur.dis >= (D - max_dis_per)) dis = cur.dis;
+			else
+			{
+				cur.dis += max_dis_per;
+				return;//无法到达终点
+			}
+		} 
+
+		if (dis == cur.dis)//没有比当前加油站更便宜的
+		{
+			if (cur.dis >= (D - max_dis_per))//600米内有终点
+			{
+				if (cur.left >= (D - cur.dis))//不用加油，直接到终点
+				{
+					cur.left = D - cur.dis;
+					cur.dis = D;
+				}
+				else//加油到终点
+				{
+					cur.money += stations.find(cur.dis)->second *(D - cur.dis - cur.left)/D_avd;
+					cur.left = 0;
+					cur.dis = D;
+				}
+				return;//到达终点
+			}
+			else//600米内没有终点，加满油，找到最便宜的加油站，更新
+			{
+				cur.money += stations.find(cur.dis)->second *(C_max - cur.left/D_avd);//加满油
+				cur.left = max_dis_per;
+				dis = find_min_p(INT_MAX, -1, max_dis_per,stations, cur);//找到最便宜的加油站
+				cur.left -= dis - cur.dis;//到达这个加油站，更新
+				cur.dis = dis;
+			}
+			
+		}
+		else//有比当前加油站便宜的，加油能够到达这个加油站即可
+		{
+			if (cur.left >= (dis - cur.dis))//能够到达这个加油站,不用加油
+			{
+				//更新
+				cur.left -= (dis - cur.dis);
+				cur.dis = dis;
+			}
+			else//加油到正好能到达dis
+			{
+				//更新
+				cur.money += stations.find(cur.dis)->second * (dis - cur.dis - cur.left)/D_avd;
+				cur.left = 0;
+				cur.dis = dis;
+
+			}
+		}
+
+
+
+	}
+}
+
+int main()
+{
+	int C_max, D, D_avg, N;//油箱容量，总距离，每单位油跑的距离，加油站个数
+	map<int,double> stations;
+	cin >> C_max >> D >> D_avg >> N;
+	for (int i = 0; i < N; i++)
+	{
+		int dis;
+		double p;
+		cin >> p >> dis;
+		stations[dis] = p;
+	}
+	if (stations.count(0) == 0)
+	{
+		cout << "The maximum travel distance = 0.00";
+		return 0;
+	}
+	else if(D == 0)
+	{
+		cout << "0.00";
+		return 0;
+	}
+	state cur;
+	tanxin(C_max, D, D_avg,stations,cur);
+	if (cur.dis == D) cout <<setiosflags(ios::fixed) <<setprecision(2)<<cur.money;
+	else cout << "The maximum travel distance = " << setiosflags(ios::fixed) << setprecision(2) << cur.dis + cur.left;
+    return 0;
+}
+
