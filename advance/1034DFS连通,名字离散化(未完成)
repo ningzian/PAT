@@ -1,0 +1,121 @@
+// 1034.cpp : Defines the entry point for the console application.
+//名字是个字符串，存储太长，可以离散化
+//使用DFS,寻找连通域
+//第2个测试点没通过
+
+
+#include <iostream>
+#include <string>
+#include <vector>
+#include <map>
+#include <set>
+using namespace std;
+
+struct node//最终结果
+{
+	string s;//head的名字
+	int n;//gang的人数
+	node(string i_s,int i_n)
+	{
+		s = i_s;
+		n = i_n;
+	}
+};
+
+int hashname(const string &s)
+{
+	return (s[0] - 'A') * 26 * 26 + (s[1] - 'A') * 26 + (s[2] - 'A');
+}
+string int_to_string(int t)
+{
+	string s{"AAA"};
+	s[2] += t % 26;
+	t /= 26;
+	s[1] += t % 26;
+	t /= 26;
+	s[0] += t % 26;
+	return s;
+}
+
+void DFS(int s,const map<int, vector<int>> &m, map<int,bool> &color, vector<int> &ans)
+{
+	if (color[s]) return;
+	color[s] = true;
+	ans.push_back(s);
+	for (auto i = m.find(s)->second.begin(); i != m.find(s)->second.end(); i++)
+	{
+		DFS(*i, m, color, ans);
+	}
+}
+
+int main()
+{
+	int n, c;	//c是阈值
+	map<int,int> time_call;		//每个人的通话时间
+	map<int, vector<int>> m;	//相互的联系，数组的形式
+	cin >> n >> c;
+	while (n--)
+	{
+		string s1, s2;
+		int t;
+		cin >> s1 >> s2 >> t;
+		int nam1 = hashname(s1);
+		int nam2 = hashname(s2);
+		m[nam1].push_back(nam2);
+		m[nam2].push_back(nam1);
+		time_call[nam1] += t;
+		time_call[nam2] += t;
+	}
+	int N = m.size();
+	vector<set<int>> gang;//并查集的集合
+	map<int, bool> color;
+	vector<int> ans;
+	vector<node> f_ans;//最终结果
+	for (auto i = m.begin(); i != m.end(); i++)
+	{
+		color[i->first] = false;
+	}
+
+	for (auto i = m.begin(); i != m.end(); i++)
+	{
+		if (color[i->first] == false)
+		{
+			DFS(i->first, m, color, ans);
+		}
+		//判断连通域
+		if (ans.size() > 2)//此连通域人数多于2个
+		{
+			//求总时间
+			int total_time = 0;
+			for (auto name_i : ans)
+			{
+				total_time += time_call[name_i];
+			}
+			if (total_time > 2*c)//这是一个gang
+			{
+				//找到head
+				int name = ans.front();
+				int max_call_time = time_call[name];
+				for (auto name_i : ans)
+				{
+					if (time_call[name_i] > max_call_time)
+					{
+						max_call_time = time_call[name_i];
+						name = name_i;
+					}
+				}
+				node tem(int_to_string(name),ans.size());
+				f_ans.push_back(tem);
+			}
+		}
+		ans.clear();
+	}
+	cout << f_ans.size() << endl;
+	for (auto i : f_ans)
+	{
+		cout << i.s << " " << i.n << endl;
+	}
+
+    return 0;
+}
+
