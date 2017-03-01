@@ -1,0 +1,71 @@
+// 1036.cpp : Defines the entry point for the console application.
+//
+
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+struct student
+{
+	string name;
+	string id;
+	int grade;
+	student(int n)
+	{
+		grade = n;
+	}
+};
+
+int main()
+{
+	//输入
+	int N;
+	vector<student> M;
+	vector<student> F;
+	cin >> N;
+	while (N--)
+	{
+		student tem(0);
+		char t;
+		cin >> tem.name >> t >> tem.id >> tem.grade;
+		if (t == 'M')
+		{
+			M.push_back(tem);
+		}
+		else F.push_back(tem);
+	}
+	//计算
+	student M_L(101);
+	student F_H(-1);
+	for (auto &i : M)
+	{
+		if (i.grade < M_L.grade) M_L = i;
+	}
+	for (auto &i : F)
+	{
+		if (i.grade > F_H.grade)F_H = i;
+	}
+	//输出
+	bool flag = false;
+	if (F_H.grade == -1)
+	{
+		cout << "Absent" << endl;
+		flag = true;
+	}
+	else cout << F_H.name << " " << F_H.id << endl;
+	if (M_L.grade == 101)
+	{
+		cout << "Absent"<<endl;
+		flag = true;
+	}
+	else cout << M_L.name << " " << M_L.id << endl;
+	
+	if (flag)
+	{
+		cout << "NA";
+	}
+	else cout << F_H.grade - M_L.grade;
+    return 0;
+}
+
