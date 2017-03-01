@@ -1,0 +1,88 @@
+// 1035.cpp : 水
+//字符串中的特定字符替代
+
+#include <iostream>
+#include <string>
+#include <vector>
+using namespace std;
+
+struct person
+{
+	string id;//用户名
+	string s;//密码
+};
+
+bool change(string &s)
+{
+	bool f = false;
+	for (auto &i : s)
+	{
+		if (i == '1')
+		{
+			i = '@';
+			f = true;
+		}
+		else if (i == '0')
+		{
+			i = '%';
+			f = true;
+		}
+		else if (i == 'l')
+		{
+			i = 'L';
+			f = true;
+		}
+		else if (i == 'O')
+		{
+			i = 'o';
+			f = true;
+		}
+
+	}
+	return f;
+}
+
+int main()
+{
+	//输入
+	int N;
+	cin >> N;
+	vector<person> v;
+	vector<person> ans;
+	for (int i = 0; i < N; i++)
+	{
+		person tem;
+		cin >> tem.id >> tem.s;
+		v.push_back(tem);
+	}
+	//计算
+	for (auto &i : v)
+	{
+		if (change(i.s)) ans.push_back(i);
+	}
+	//输出
+	if (ans.empty())
+	{
+		if (N == 1)
+		{
+			cout << "There is 1 account and no account is modified";
+		}
+		else
+		{
+			cout << "There are " << N << " accounts and no account is modified";
+		}
+	}
+	else
+	{
+		cout << ans.size() << endl;
+		for (auto &i : ans)
+		{
+			cout << i.id << " " << i.s << endl;
+		}
+
+	}
+
+
+    return 0;
+}
+
