@@ -1,0 +1,67 @@
+// 1037.cpp : 降序排序
+//头文件，functional,greater<int>();
+
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <functional>
+using namespace std;
+
+
+int main()
+{
+	//输入
+	vector<int> f_1;
+	vector<int> f_2;
+	vector<int> s_1;
+	vector<int> s_2;
+	int n1, n2;
+	cin >> n1;
+	while (n1--)
+	{
+		int tem;
+		cin >> tem;
+		if (tem >= 0) f_1.push_back(tem);
+		else
+		{
+			tem = -tem;
+			f_2.push_back(tem);
+		}
+	}
+	cin >> n2;
+	while (n2--) 
+	{
+		int tem;
+		cin >> tem;
+		if (tem >= 0) s_1.push_back(tem);
+		else
+		{
+			tem = -tem;
+			s_2.push_back(tem);
+		}
+	}
+	//计算
+	sort(f_1.begin(), f_1.end(),greater<int>());
+	sort(f_2.begin(), f_2.end(),greater<int>());
+	sort(s_1.begin(), s_1.end(), greater<int>());
+	sort(s_2.begin(), s_2.end(), greater<int>());
+
+	int ans = 0;
+	int n = f_1.size() < s_1.size() ? f_1.size() : s_1.size();
+	for (int i = 0; i < n; i++)
+	{
+		ans += f_1[i] * s_1[i];
+	}
+	n = f_2.size() < s_2.size() ? f_2.size() : s_2.size();
+	for (int i = 0; i < n; i++)
+	{
+		ans += f_2[i] * s_2[i];
+	}
+	cout << ans;
+
+
+
+
+    return 0;
+}
+
