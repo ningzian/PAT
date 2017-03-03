@@ -1,0 +1,47 @@
+// 1040.cpp : Defines the entry point for the console application.
+//最长反转子串，直接暴力判断
+#include <iostream>
+#include <string>
+using namespace std;
+
+int expond(const string &s, string::iterator i, string::iterator j)
+{
+	while (j != s.end())
+	{
+		if ((*i) == (*j))
+		{
+			if (i == s.begin())
+			{
+				return j - i + 1;
+			}
+			else
+			{
+				i--;
+				j++;
+			}
+		}
+		else 
+		{
+			return j - i - 1;
+		}
+	}
+	return j - i - 1;
+}
+
+int main()
+{
+	string s;
+	getline(cin,s);
+	int max_len = 0;
+	for (auto i = s.begin(); i != s.end(); i++)
+	{
+
+		int len1 = expond(s, i, i);
+		int len2 = expond(s, i, i + 1);
+		int len = len1 > len2 ? len1 : len2;
+		if (len > max_len)max_len = len;
+	}
+	cout << max_len;
+    return 0;
+}
+
