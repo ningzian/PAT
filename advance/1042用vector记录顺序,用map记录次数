@@ -1,5 +1,5 @@
 // 1042.cpp : be unique
-//
+//map存储会改变原来的顺序，按key升序排列。unordered_map按hash顺序排列
 
 #include <iostream>
 #include <unordered_map>
