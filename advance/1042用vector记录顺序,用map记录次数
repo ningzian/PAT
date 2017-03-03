@@ -1,0 +1,35 @@
+// 1042.cpp : be unique
+//
+
+#include <iostream>
+#include <unordered_map>
+#include <vector>
+using namespace std;
+
+
+int main()
+{
+	int N;
+	cin >> N;
+	unordered_map<int, int> m;
+	vector<int> v;
+	while (N--)
+	{
+		int i;
+		cin >> i;
+		v.push_back(i);
+		m[i]++;
+	}
+	auto i = v.begin();
+	for (;i!=v.end();i++)
+	{
+		if (m[*i] == 1)
+		{
+			cout << *i;
+			break;
+		}
+	}
+	if (i == v.end()) cout << "None";
+    return 0;
+}
+
