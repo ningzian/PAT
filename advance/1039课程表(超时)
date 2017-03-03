@@ -1,0 +1,43 @@
+// 1039.cpp : Defines the entry point for the console application.
+//
+
+#include <iostream>
+#include <vector>
+#include <string>
+#include <unordered_map>
+#include <algorithm>
+using namespace std;
+
+
+int main()
+{
+	unordered_map<string, vector<int>> m;
+	int N,K;
+	cin >> N >> K;
+	while (K--)
+	{
+		int i, n;
+		cin >> i >> n;
+		while (n--)
+		{
+			string s;
+			cin >> s;
+			m[s].push_back(i);
+		}
+	}
+	//输出
+	while (N--)
+	{
+		string s;
+		cin >> s;
+		cout << s <<" "<< m[s].size();
+		sort(m[s].begin(), m[s].end());
+		for (auto &i : m[s])
+		{
+			cout<<" " << i;		
+		}
+		cout << endl;
+	}
+    return 0;
+}
+
