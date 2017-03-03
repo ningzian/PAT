@@ -1,0 +1,46 @@
+// 1038.cpp : 判断大小用a+b<b+a
+//去掉开头的0，如果如果全部是0，则输出一个0
+
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+bool is_small(const string &lhs, const string &rhs)
+{
+	
+	return (lhs + rhs) < (rhs + lhs);
+}
+
+int main()
+{
+	//输入
+	int N;
+	cin >> N;
+	vector<string> v;
+	while (N--)
+	{
+		string s;
+		cin >> s;
+		v.push_back(s);
+	}
+	//计算
+	sort(v.begin(), v.end(), is_small);
+	//输出
+	//找到第一个0
+	bool f = true;//是头
+	for (auto i = v.begin(); i != v.end(); i++)
+	{
+		for (auto j = (*i).begin(); j != (*i).end(); j++)
+		{
+			if (*j != '0')f = false;
+			if ((f) && (*j == '0')) continue;
+			else cout << *j;
+		}
+		
+	}
+	if (f) cout << '0';
+    return 0;
+}
+
