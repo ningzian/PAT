@@ -1,6 +1,6 @@
 // 1020.cpp : Defines the entry point for the console application.
 //二叉树、链表创建节点的时候，一定要用new。
-//二叉树的后序遍历postorder，中序遍历inorder。层级遍历
+//二叉树的后序遍历postorder，中序遍历inorder，前序遍历preorder，层级遍历levelorder
 #include <iostream>
 #include <vector>
 #include <queue>
